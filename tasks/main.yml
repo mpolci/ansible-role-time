@@ -1,0 +1,28 @@
+---
+- name: "dbus package"
+  apt: name=dbus
+  tags: [packages,time]
+
+- name: "Set timezone"
+  timezone: name={{ timezone }}
+  tags: time
+
+- name: "get timedatectl status"
+  command: "timedatectl status"
+  changed_when: false
+  register: timedatectl_stat
+  tags: time
+
+- name: "set NTP enabled to true"
+  command: "timedatectl set-ntp true"
+  when: "{{ time_ntp_enabled
+            and timedatectl_stat.stdout is defined
+            and timedatectl_stat.stdout.find('NTP enabled: yes') == -1 }}"
+  tags: time
+
+- name: "set NTP enabled to false"
+  command: "timedatectl set-ntp false"
+  when: "{{ not time_ntp_enabled
+            and timedatectl_stat.stdout is defined
+            and timedatectl_stat.stdout.find('NTP enabled: no') == -1 }}"
+  tags: time

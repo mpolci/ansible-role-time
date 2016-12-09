@@ -1,0 +1,2 @@
+timezone: Etc/UTC
+time_ntp_enabled: true
